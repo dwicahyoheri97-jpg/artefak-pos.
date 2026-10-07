@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTEFAK - Printing POS & Live Sync System</title>
-
-    <link rel="icon" type="image/png" href="logo-toko.png">
+    <link rel="icon" type="image/png" href="logo-toko-nota.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -130,7 +129,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.30 (Live Sync)</span>
+            <span>v2.38 (Tight Logo Margin)</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -181,7 +180,7 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Transaksi Terakhir</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
-                            <thead><tr class="text-gray-500 border-b"><th class="pb-2 font-medium">ID & Waktu</th><th class="pb-2 font-medium">Pelanggan</th><th class="pb-2 font-medium">Total</th><th class="pb-2 font-medium">Laba Bersih</th><th class="pb-2 font-medium">Status</th></tr></thead>
+                            <thead><tr class="text-gray-500 border-b"><th class="pb-2 font-medium">ID & Waktu</th><th class="pb-2 font-medium">Pelanggan</th><th class="pb-2 font-medium">Kasir</th><th class="pb-2 font-medium">Total</th><th class="pb-2 font-medium">Laba Bersih</th><th class="pb-2 font-medium">Status</th></tr></thead>
                             <tbody id="dash-recent-trx"></tbody>
                         </table>
                     </div>
@@ -361,7 +360,7 @@
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="bg-gray-50 text-gray-600 text-sm border-b"><th class="p-3 font-medium">ID Transaksi</th><th class="p-3 font-medium">Waktu & Tanggal Lengkap</th><th class="p-3 font-medium">Pelanggan</th><th class="p-3 font-medium">Total</th><th class="p-3 font-medium">Status</th><th class="p-3 font-medium">Aksi</th></tr></thead>
+                        <thead><tr class="bg-gray-50 text-gray-600 text-sm border-b"><th class="p-3 font-medium">ID Transaksi</th><th class="p-3 font-medium">Waktu & Tanggal Lengkap</th><th class="p-3 font-medium">Pelanggan</th><th class="p-3 font-medium">Kasir</th><th class="p-3 font-medium">Total</th><th class="p-3 font-medium">Status</th><th class="p-3 font-medium">Aksi</th></tr></thead>
                         <tbody id="history-table-body" class="text-sm"></tbody>
                     </table>
                 </div>
@@ -369,53 +368,111 @@
 
             <!-- Pengaturan View -->
             <div id="view-pengaturan" class="hidden-view hidden space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-3xl">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Pengaturan Identitas Toko & Live Sync Spreadsheet</h3>
-                    <form onsubmit="saveSettings(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Toko</label><input type="text" id="set-nama" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon / WA</label><input type="text" id="set-telp" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
-                        </div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label><textarea id="set-alamat" rows="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></textarea></div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Pesan / Keterangan Bawah Nota</label><input type="text" id="set-footer-note" placeholder="Contoh: Terimakasih telah berbelanja di toko kami" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                            <h4 class="text-sm font-semibold text-blue-800 mb-3">Info Pembayaran (Tampil di Nota)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Nama Bank / E-Wallet</label><input type="text" id="set-bank" placeholder="BCA / DANA / QRIS" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
-                                <div><label class="block text-xs font-medium text-gray-700 mb-1">No Rekening & Atas Nama</label><input type="text" id="set-rek" placeholder="123456789 a.n ARTEFAK" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-3xl space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Manajemen Akun Kasir (Staff)</h3>
+                        <div class="space-y-3 mb-4" id="staff-list-container"></div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                            <h4 class="text-sm font-semibold text-slate-800">Tambah Akun Kasir Baru</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input type="text" id="new-cashier-user" placeholder="Username Kasir" class="border border-gray-300 rounded-lg p-2 text-sm bg-white">
+                                <input type="password" id="new-cashier-pass" placeholder="PIN / Password" class="border border-gray-300 rounded-lg p-2 text-sm bg-white">
                             </div>
+                            <button type="button" onclick="addNewCashier()" class="bg-secondary hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-lg text-xs transition-colors">Tambah Kasir</button>
                         </div>
-                        <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 space-y-3">
-                            <h4 class="text-sm font-semibold text-emerald-900 flex items-center"><i class="ph ph-google-logo mr-1.5 text-base"></i> Sinkronisasi Google Spreadsheet (Apps Script Web App URL)</h4>
-                            <p class="text-xs text-emerald-700">Tempel URL Web App dari Google Apps Script untuk menyambungkan database live secara otomatis.</p>
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Google Apps Script Web App URL</label><input type="url" id="set-sheet-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary bg-white"></div>
-                        </div>
-                        <div class="pt-4 border-t flex justify-end gap-3">
-                            <button type="button" onclick="syncDataToGoogleSheet()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 px-5 rounded-lg flex items-center transition-colors text-sm"><i class="ph ph-cloud-arrow-up mr-2 text-base"></i> Test & Sync ke Spreadsheet</button>
-                            <button type="submit" class="bg-primary hover:bg-blue-900 text-white font-medium py-2 px-6 rounded-lg flex items-center transition-colors text-sm"><i class="ph ph-floppy-disk mr-2 text-base"></i> Simpan Pengaturan</button>
-                        </div>
-                    </form>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Pengaturan Identitas Toko & Logo Struk Nota</h3>
+                        <form onsubmit="saveSettings(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Toko</label><input type="text" id="set-nama" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon / WA</label><input type="text" id="set-telp" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
+                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label><textarea id="set-alamat" rows="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></textarea></div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">URL Logo Toko (Tampil di Header Struk Nota)</label>
+                                <input type="url" id="set-logo" placeholder="https://example.com/logo-toko.png" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary bg-white">
+                                <p class="text-[11px] text-gray-500 mt-1">Masukkan link gambar logo toko Anda (format PNG/JPG transparan lebih baik).</p>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="text-sm font-semibold text-slate-800 mb-2 flex items-center"><i class="ph ph-image mr-1.5 text-base text-secondary"></i> Ukuran Tampilan Logo di Struk Nota</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded border border-slate-200 text-xs font-medium">
+                                        <input type="radio" name="logo-size" value="small" id="logo-small" class="text-secondary focus:ring-secondary">
+                                        <span>Kecil (40px)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded border border-slate-200 text-xs font-medium">
+                                        <input type="radio" name="logo-size" value="medium" id="logo-medium" class="text-secondary focus:ring-secondary">
+                                        <span>Sedang (64px)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded border border-slate-200 text-xs font-medium">
+                                        <input type="radio" name="logo-size" value="large" id="logo-large" class="text-secondary focus:ring-secondary">
+                                        <span>Besar (96px)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded border border-slate-200 text-xs font-medium">
+                                        <input type="radio" name="logo-size" value="xlarge" id="logo-xlarge" class="text-secondary focus:ring-secondary">
+                                        <span>Sangat Besar (128px)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Pesan / Keterangan Bawah Nota</label><input type="text" id="set-footer-note" placeholder="Contoh: Terimakasih telah berbelanja di toko kami" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                            
+                            <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                                <h4 class="text-sm font-semibold text-amber-900 mb-2 flex items-center"><i class="ph ph-receipt mr-1.5 text-base"></i> Ukuran Kertas Struk Thermal POS</h4>
+                                <div class="flex gap-6">
+                                    <label class="flex items-center space-x-2 cursor-pointer font-medium text-sm text-gray-700">
+                                        <input type="radio" name="paper-size" value="58mm" id="paper-58" class="text-secondary focus:ring-secondary">
+                                        <span>Thermal 58 mm (Kecil/Portabel)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer font-medium text-sm text-gray-700">
+                                        <input type="radio" name="paper-size" value="80mm" id="paper-80" class="text-secondary focus:ring-secondary">
+                                        <span>Thermal 80 mm (Standar Toko)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <h4 class="text-sm font-semibold text-blue-800 mb-3">Info Pembayaran (Tampil di Nota)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Nama Bank / E-Wallet</label><input type="text" id="set-bank" placeholder="BCA / DANA / QRIS" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                                    <div><label class="block text-xs font-medium text-gray-700 mb-1">No Rekening & Atas Nama</label><input type="text" id="set-rek" placeholder="123456789 a.n ARTEFAK" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 space-y-3">
+                                <h4 class="text-sm font-semibold text-emerald-900 flex items-center"><i class="ph ph-google-logo mr-1.5 text-base"></i> Sinkronisasi Google Spreadsheet (Apps Script Web App URL)</h4>
+                                <p class="text-xs text-emerald-700">Tempel URL Web App dari Google Apps Script untuk menyambungkan database live secara otomatis.</p>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Google Apps Script Web App URL</label><input type="url" id="set-sheet-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary bg-white"></div>
+                            </div>
+                            <div class="pt-4 border-t flex justify-end gap-3">
+                                <button type="button" onclick="syncDataToGoogleSheet()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 px-5 rounded-lg flex items-center transition-colors text-sm"><i class="ph ph-cloud-arrow-up mr-2 text-base"></i> Test & Sync ke Spreadsheet</button>
+                                <button type="submit" class="bg-primary hover:bg-blue-900 text-white font-medium py-2 px-6 rounded-lg flex items-center transition-colors text-sm"><i class="ph ph-floppy-disk mr-2 text-base"></i> Simpan Pengaturan</button>
+                            </div>
+                        </form>
+                    </div>
+    <!-- Staff Edit Modal -->
+    <div id="modal-edit-staff" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-lg text-gray-800">Edit Akun Kasir</h3>
+                <button onclick="closeEditStaffModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <input type="hidden" id="edit-staff-index">
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input type="text" id="edit-staff-user" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50" readonly>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">PIN / Password Baru</label>
+                    <input type="password" id="edit-staff-pass" placeholder="Kosongkan jika tidak diubah" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-white">
                 </div>
             </div>
-        </div>
-    </main>
-
-    <!-- Modals -->
-    <div id="modal-custom-product" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-custom-content">
-            <div class="px-6 py-4 border-b bg-indigo-50 flex justify-between items-center">
-                <h3 class="font-semibold text-lg text-indigo-900 flex items-center"><i class="ph ph-magic-wand mr-2"></i> Tambah Produk Custom</h3>
-                <button onclick="closeCustomProductModal()" class="text-indigo-400 hover:text-indigo-600"><i class="ph ph-x text-xl"></i></button>
-            </div>
-            <div class="p-6">
-                <form onsubmit="addCustomToCart(event)" class="space-y-4">
-                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Jasa / Produk</label><input type="text" id="custom-nama" required placeholder="Contoh: Jasa Edit Foto Khusus" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-1"><label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label><input type="number" id="custom-harga" required min="0" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"></div>
-                        <div class="w-1/3"><label class="block text-sm font-medium text-gray-700 mb-1">Qty</label><input type="number" id="custom-qty" required min="1" value="1" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"></div>
-                    </div>
-                    <div class="pt-4 mt-2 border-t"><button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-colors">Masukan ke Keranjang</button></div>
-                </form>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="closeEditStaffModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium">Batal</button>
+                <button type="button" onclick="saveEditStaff()" class="flex-1 bg-secondary hover:bg-blue-600 text-white py-2 rounded-lg text-sm font-medium">Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -562,8 +619,9 @@
     <!-- Nota Modal -->
     <div id="modal-nota" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-nota-content">
-            <div class="bg-gray-50 p-6 text-center border-b border-dashed border-gray-300 flex-shrink-0">
-                <h2 class="text-2xl font-bold tracking-wider" id="nota-header-name">ARTEFAK.</h2>
+            <div class="bg-gray-50 p-6 text-center border-b border-dashed border-gray-300 flex-shrink-0" id="nota-preview-container">
+                <div id="nota-header-box" class="flex flex-col items-center justify-center" style="margin-bottom: 5px;"></div>
+                <h2 class="text-xl font-bold tracking-wider" id="nota-header-name">ARTEFAK.</h2>
                 <p class="text-xs text-gray-500" id="nota-header-address">Jl. Printing Sukses No.1</p>
                 <p class="text-xs text-gray-500" id="nota-header-phone">Telp: 0812-XXXX-XXXX</p>
             </div>
@@ -583,10 +641,19 @@
 
     <script>
         let currentUser = null;
+        let staffList = JSON.parse(localStorage.getItem('artefak_staff')) || [
+            { username: 'owner', pin: '123', role: 'owner' },
+            { username: 'kasir', pin: '123', role: 'kasir' },
+            { username: 'admin', pin: '123456', role: 'owner' }
+        ];
+
         let storeSettings = JSON.parse(localStorage.getItem('artefak_settings')) || {
             nama: 'ARTEFAK PRINTING',
             alamat: 'Jl. Contoh Alamat No. 123, Kota Anda',
             telp: '081234567890',
+            logoUrl: '',
+            logoSize: 'medium',
+            paperSize: '58mm',
             bank: 'BCA',
             rek: '1234567890 a.n Artefak',
             footerNote: 'Terimakasih telah berbelanja di toko kami',
@@ -623,6 +690,16 @@
             });
         }
 
+        function getLogoPixelSize(sizeKey) {
+            switch(sizeKey) {
+                case 'small': return { maxH: 40, maxW: 100 };
+                case 'medium': return { maxH: 64, maxW: 160 };
+                case 'large': return { maxH: 96, maxW: 220 };
+                case 'xlarge': return { maxH: 128, maxW: 280 };
+                default: return { maxH: 64, maxW: 160 };
+            }
+        }
+
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
@@ -637,9 +714,9 @@
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value.trim();
 
-            if((u === 'owner' && p === '123') || (u === 'kasir' && p === '123') || (u === 'admin' && p === '123456')) {
-                const role = (u === 'owner' || u === 'admin') ? 'owner' : 'kasir';
-                currentUser = { username: u, role: role };
+            const foundUser = staffList.find(s => s.username === u && s.pin === p);
+            if(foundUser) {
+                currentUser = { username: foundUser.username, role: foundUser.role };
                 sessionStorage.setItem('artefak_session', JSON.stringify(currentUser));
                 initSessionUI();
             } else {
@@ -754,7 +831,7 @@
             const recent = transactions.filter(t => t.status !== 'VOID').slice(0, 5);
             const tbody = document.getElementById('dash-recent-trx');
             if(recent.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-400">Belum ada transaksi</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">Belum ada transaksi</td></tr>`;
             } else {
                 tbody.innerHTML = recent.map(trx => {
                     let trxLaba = 0;
@@ -779,6 +856,7 @@
                     <tr class="border-b last:border-0 hover:bg-gray-50">
                         <td class="py-3 font-medium text-gray-700"><div>${trx.id}</div><div class="text-[11px] text-gray-400">${formatTanggalLengkap(trx.tanggal)}</div></td>
                         <td class="py-3 text-gray-600">${trx.pelanggan || '-'}</td>
+                        <td class="py-3 text-gray-600 font-medium">${trx.kasir || '-'}</td>
                         <td class="py-3 font-semibold text-primary">${formatRp(trx.total)}</td>
                         <td class="py-3 font-semibold text-emerald-600">+${formatRp(trxLaba)}</td>
                         <td class="py-3"><span class="px-2 py-1 rounded text-[10px] font-bold ${trx.status === 'LUNAS' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${trx.status}</span></td>
@@ -787,7 +865,6 @@
             }
         }
 
-        // Pembelian Bahan Functions
         function initPembelianView() {
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -856,7 +933,6 @@
             document.getElementById('stat-total-pembelian').textContent = formatRp(totalPeriode);
         }
 
-        // Laporan Keuangan Functions
         function initLaporanView() {
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -1236,10 +1312,12 @@
             const pelanggan = document.getElementById('input-pelanggan-global').value || "Umum";
             const metode = document.getElementById('checkout-method').value;
             const isLunas = dibayar >= totalCart;
+            const currentKasirName = currentUser ? currentUser.username : 'owner';
+            
             const newTrx = {
                 id: "TRX" + Date.now().toString().slice(-6), tanggal: new Date().toISOString(),
                 pelanggan: pelanggan, total: totalCart, dibayar: dibayar, sisa: isLunas ? 0 : (totalCart - dibayar),
-                status: isLunas ? "LUNAS" : "DP", metode: metode, items: [...cart], kasir: currentUser ? currentUser.username : 'owner'
+                status: isLunas ? "LUNAS" : "DP", metode: metode, items: [...cart], kasir: currentKasirName
             };
             transactions.unshift(newTrx);
 
@@ -1261,6 +1339,15 @@
 
         function tampilkanNota(trx) {
             lastPrintedTrx = trx;
+            
+            const headerBox = document.getElementById('nota-header-box');
+            if(storeSettings.logoUrl) {
+                const px = getLogoPixelSize(storeSettings.logoSize || 'medium');
+                headerBox.innerHTML = `<img src="${storeSettings.logoUrl}" alt="Logo Toko" style="max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; margin-bottom: 0px;" onerror="this.style.display='none'">`;
+            } else {
+                headerBox.innerHTML = '';
+            }
+
             document.getElementById('nota-header-name').textContent = storeSettings.nama;
             document.getElementById('nota-header-address').textContent = storeSettings.alamat;
             document.getElementById('nota-header-phone').textContent = storeSettings.telp ? `Telp/WA: ${storeSettings.telp}` : '';
@@ -1271,9 +1358,15 @@
                     <span class="text-right w-1/3">${formatRp(i.subtotal)}</span>
                 </div>`).join('');
 
+            const printTimeStr = formatTanggalLengkap(new Date().toISOString());
+
             document.getElementById('nota-body').innerHTML = `
-                <div class="border-b border-dashed border-gray-300 pb-2 text-left text-xs">
-                    <p>No: ${trx.id}</p><p>Waktu: ${formatTanggalLengkap(trx.tanggal)}</p><p>Plg: ${trx.pelanggan}</p><p>Opr: ${trx.kasir || '-'}</p>
+                <div class="border-b border-dashed border-gray-300 pb-2 text-left text-xs space-y-0.5">
+                    <p>No Nota: ${trx.id}</p>
+                    <p>Waktu Trx: ${formatTanggalLengkap(trx.tanggal)}</p>
+                    <p>Cetak Struk: ${printTimeStr}</p>
+                    <p>Pelanggan: ${trx.pelanggan}</p>
+                    <p>Kasir: <strong class="text-primary">${trx.kasir || '-'}</strong></p>
                 </div>
                 <div class="border-b border-dashed border-gray-300 pb-2">${itemsHtml}</div>
                 <div class="text-right space-y-1 font-medium border-b border-dashed border-gray-300 pb-2">
@@ -1299,7 +1392,8 @@
         function salinNotaWA() {
             if(!lastPrintedTrx) return;
             const t = lastPrintedTrx;
-            let text = `*NOTA PEMBAYARAN - ${storeSettings.nama}*\nNo Nota: ${t.id}\nWaktu: ${formatTanggalLengkap(t.tanggal)}\nPelanggan: ${t.pelanggan}\n------------------------------------\n`;
+            const printTimeStr = formatTanggalLengkap(new Date().toISOString());
+            let text = `*NOTA PEMBAYARAN - ${storeSettings.nama}*\nNo Nota: ${t.id}\nWaktu Trx: ${formatTanggalLengkap(t.tanggal)}\nWaktu Cetak: ${printTimeStr}\nPelanggan: ${t.pelanggan}\nKasir: ${t.kasir || '-'}\n------------------------------------\n`;
             t.items.forEach(i => { text += `• ${i.product.nama} (${i.qty}x) - ${formatRp(i.subtotal)}\n`; if(i.keterangan) text += `  (${i.keterangan})\n`; });
             text += `------------------------------------\nTotal: *${formatRp(t.total)}*\nBayar (${t.metode}): ${formatRp(t.dibayar)}\n`;
             if(t.status === 'DP') text += `Sisa Tagihan: *${formatRp(t.sisa)}*\n`;
@@ -1311,11 +1405,42 @@
         }
 
         function printNota() {
-            const prtContent = document.getElementById("nota-body").innerHTML;
+            if(!lastPrintedTrx) return;
+            const t = lastPrintedTrx;
+            const paperWidth = storeSettings.paperSize === '80mm' ? '80mm' : '58mm';
+            const fontSize = storeSettings.paperSize === '80mm' ? '12px' : '10px';
+            const px = getLogoPixelSize(storeSettings.logoSize || 'medium');
+            const printTimeStr = formatTanggalLengkap(new Date().toISOString());
+
             const WinPrint = window.open('', '', 'left=0,top=0,width=400,height=600');
-            WinPrint.document.write(`<html><head><title>Print Nota</title><style>body{font-family:monospace; padding:10px; font-size:12px; max-width: 80mm; margin: 0 auto;} .border-dashed{border-bottom:1px dashed #ccc;} .pb-2{padding-bottom:8px;} .flex{display:flex;} .justify-between{justify-content:space-between;} .text-right{text-align:right;} .text-center{text-align:center;} .italic{font-style:italic;} .text-gray-500{color:#666;}</style></head><body>`);
-            WinPrint.document.write(`<div style="text-align:center; margin-bottom:10px;"><strong>${storeSettings.nama}</strong><br>${storeSettings.alamat}<br>${storeSettings.telp ? 'Telp: '+storeSettings.telp : ''}</div>`);
-            WinPrint.document.write(prtContent); WinPrint.document.write('</body></html>');
+            WinPrint.document.write(`<html><head><title>Print Struk Nota</title><style>
+                body { font-family: 'Courier New', monospace; padding: 5px; font-size: ${fontSize}; width: ${paperWidth}; margin: 0 auto; color: #000; }
+                .text-center { text-align: center; }
+                .text-right { text-align: right; }
+                .flex { display: flex; }
+                .justify-between { justify-content: space-between; }
+                .border-dashed { border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px; }
+                img { display: block; margin: 0 auto 0 auto; max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; }
+            </style></head><body>`);
+
+            if(storeSettings.logoUrl) {
+                WinPrint.document.write(`<div class="text-center" style="margin-bottom: 5px;"><img src="${storeSettings.logoUrl}" alt="Logo"></div>`);
+            }
+            WinPrint.document.write(`<div class="text-center border-dashed"><strong>${storeSettings.nama}</strong><br>${storeSettings.alamat}<br>${storeSettings.telp ? 'Telp: '+storeSettings.telp : ''}</div>`);
+            WinPrint.document.write(`<div class="border-dashed">No: ${t.id}<br>Waktu Trx: ${formatTanggalLengkap(t.tanggal)}<br>Cetak: ${printTimeStr}<br>Pelanggan: ${t.pelanggan}<br>Kasir: ${t.kasir || '-'}</div>`);
+            
+            let itemsText = '';
+            t.items.forEach(i => {
+                itemsText += `<div class="flex justify-between"><span>${i.product.nama} (${i.qty}x)</span><span>${formatRp(i.subtotal)}</span></div>`;
+                if(i.keterangan) itemsText += `<div style="font-size: 9px; color: #444;">&nbsp;&nbsp;${i.keterangan}</div>`;
+            });
+            WinPrint.document.write(`<div class="border-dashed">${itemsText}</div>`);
+            
+            WinPrint.document.write(`<div class="text-right border-dashed">Total: ${formatRp(t.total)}<br>Bayar (${t.metode}): ${formatRp(t.dibayar)}<br>${t.status === 'LUNAS' ? 'Kembali: ' + formatRp(t.dibayar - t.total) : 'Sisa/Kurang: ' + formatRp(t.sisa)}</div>`);
+            WinPrint.document.write(`<div class="text-center font-bold" style="font-size: 14px; margin: 5px 0;">*** ${t.status} ***</div>`);
+            WinPrint.document.write(`<div class="text-center" style="font-size: 9px; margin-top: 8px; font-style: italic;">${storeSettings.footerNote || 'Terimakasih telah berbelanja'}</div>`);
+
+            WinPrint.document.write('</body></html>');
             WinPrint.document.close(); WinPrint.focus();
             setTimeout(() => { WinPrint.print(); WinPrint.close(); }, 500);
         }
@@ -1427,7 +1552,7 @@
             });
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-gray-400">Tidak ada transaksi pada rentang tanggal ini</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-gray-400">Tidak ada transaksi pada rentang tanggal ini</td></tr>`;
                 return;
             }
             tbody.innerHTML = filtered.map(trx => {
@@ -1437,6 +1562,7 @@
                     <td class="p-3 font-medium ${isVoid ? 'text-gray-400' : 'text-gray-800'}">${trx.id}</td>
                     <td class="p-3 text-xs text-gray-600 font-medium">${formatTanggalLengkap(trx.tanggal)}</td>
                     <td class="p-3">${trx.pelanggan || '-'}</td>
+                    <td class="p-3 font-medium text-gray-700">${trx.kasir || '-'}</td>
                     <td class="p-3 font-semibold">${formatRp(trx.total)}</td>
                     <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${isVoid ? 'bg-red-100 text-red-600' : (trx.status === 'LUNAS' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700')}">${trx.status}</span></td>
                     <td class="p-3">
@@ -1453,10 +1579,86 @@
             document.getElementById('set-nama').value = storeSettings.nama;
             document.getElementById('set-telp').value = storeSettings.telp;
             document.getElementById('set-alamat').value = storeSettings.alamat;
+            document.getElementById('set-logo').value = storeSettings.logoUrl || '';
             document.getElementById('set-bank').value = storeSettings.bank;
             document.getElementById('set-rek').value = storeSettings.rek;
             document.getElementById('set-footer-note').value = storeSettings.footerNote || 'Terimakasih telah berbelanja di toko kami';
             document.getElementById('set-sheet-url').value = storeSettings.sheetUrl || '';
+            
+            const size = storeSettings.logoSize || 'medium';
+            const sizeRadio = document.getElementById('logo-' + size);
+            if(sizeRadio) sizeRadio.checked = true;
+
+            if(storeSettings.paperSize === '80mm') {
+                document.getElementById('paper-80').checked = true;
+            } else {
+                document.getElementById('paper-58').checked = true;
+            }
+            renderStaffList();
+        }
+
+        function renderStaffList() {
+            const container = document.getElementById('staff-list-container');
+            container.innerHTML = staffList.map((s, idx) => `
+                <div class="flex justify-between items-center bg-white p-3 rounded-lg border text-sm">
+                    <div>
+                        <span class="font-semibold text-gray-800">${s.username}</span>
+                        <span class="ml-2 text-xs uppercase px-2 py-0.5 rounded font-bold ${s.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${s.role}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEditStaffModal(${idx})" class="text-secondary bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded text-xs font-medium flex items-center"><i class="ph ph-pencil-simple mr-1"></i> Edit</button>
+                        ${s.username !== 'owner' ? `<button onclick="deleteStaff(${idx})" class="text-red-500 hover:text-red-700 text-xs font-medium px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 flex items-center"><i class="ph ph-trash mr-1"></i> Hapus</button>` : '<span class="text-xs text-gray-400 px-2">Utama</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openEditStaffModal(idx) {
+            const s = staffList[idx];
+            document.getElementById('edit-staff-index').value = idx;
+            document.getElementById('edit-staff-user').value = s.username;
+            document.getElementById('edit-staff-pass').value = '';
+            document.getElementById('modal-edit-staff').classList.remove('hidden');
+        }
+
+        function closeEditStaffModal() {
+            document.getElementById('modal-edit-staff').classList.add('hidden');
+        }
+
+        function saveEditStaff() {
+            const idx = parseInt(document.getElementById('edit-staff-index').value);
+            const newPass = document.getElementById('edit-staff-pass').value.trim();
+            if(newPass) {
+                staffList[idx].pin = newPass;
+                localStorage.setItem('artefak_staff', JSON.stringify(staffList));
+                showToast("Password akun berhasil diperbarui!");
+            } else {
+                showToast("Tidak ada perubahan password.");
+            }
+            closeEditStaffModal();
+            renderStaffList();
+        }
+
+        function addNewCashier() {
+            const u = document.getElementById('new-cashier-user').value.trim();
+            const p = document.getElementById('new-cashier-pass').value.trim();
+            if(!u || !p) { showToast("Username dan PIN wajib diisi!", true); return; }
+            if(staffList.some(s => s.username === u)) { showToast("Username sudah terdaftar!", true); return; }
+
+            staffList.push({ username: u, pin: p, role: 'kasir' });
+            localStorage.setItem('artefak_staff', JSON.stringify(staffList));
+            document.getElementById('new-cashier-user').value = "";
+            document.getElementById('new-cashier-pass').value = "";
+            renderStaffList();
+            showToast("Akun kasir baru berhasil ditambahkan!");
+        }
+
+        function deleteStaff(idx) {
+            if(staffList[idx].username === 'owner') return;
+            staffList.splice(idx, 1);
+            localStorage.setItem('artefak_staff', JSON.stringify(staffList));
+            renderStaffList();
+            showToast("Akun kasir dihapus.");
         }
 
         function saveSettings(e) {
@@ -1464,12 +1666,20 @@
             storeSettings.nama = document.getElementById('set-nama').value;
             storeSettings.telp = document.getElementById('set-telp').value;
             storeSettings.alamat = document.getElementById('set-alamat').value;
+            storeSettings.logoUrl = document.getElementById('set-logo').value.trim();
             storeSettings.bank = document.getElementById('set-bank').value;
             storeSettings.rek = document.getElementById('set-rek').value;
             storeSettings.footerNote = document.getElementById('set-footer-note').value;
             storeSettings.sheetUrl = document.getElementById('set-sheet-url').value.trim();
+            
+            const logoSizeSelected = document.querySelector('input[name="logo-size"]:checked');
+            storeSettings.logoSize = logoSizeSelected ? logoSizeSelected.value : 'medium';
+
+            const paperSelected = document.querySelector('input[name="paper-size"]:checked');
+            storeSettings.paperSize = paperSelected ? paperSelected.value : '58mm';
+
             localStorage.setItem('artefak_settings', JSON.stringify(storeSettings));
-            showToast("Pengaturan toko berhasil disimpan!");
+            showToast("Pengaturan toko & akun berhasil disimpan!");
         }
 
         async function syncSingleTransactionToSheet(trx) {
