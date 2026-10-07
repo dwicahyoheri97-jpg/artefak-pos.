@@ -129,7 +129,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.38 (Tight Logo Margin)</span>
+            <span>v2.39 (Fixed Checkout)</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -452,6 +452,12 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
     <!-- Staff Edit Modal -->
     <div id="modal-edit-staff" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4">
@@ -507,6 +513,25 @@
         </div>
     </div>
 
+    <!-- Custom Product Modal -->
+    <div id="modal-custom-product" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-custom-content">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-semibold text-lg text-gray-800">Tambah Produk Custom</h3>
+                <button onclick="closeCustomProductModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <form onsubmit="addCustomToCart(event)" class="p-6 space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang / Jasa</label><input type="text" id="custom-nama" required placeholder="Contoh: Jasa Desain Grafis" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label><input type="number" id="custom-harga" required min="0" placeholder="Contoh: 50000" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary font-semibold"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Jumlah (Qty)</label><input type="number" id="custom-qty" required min="1" value="1" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeCustomProductModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium">Batal</button>
+                    <button type="submit" class="flex-1 bg-secondary hover:bg-blue-600 text-white py-2 rounded-lg text-sm font-medium">Masukkan Keranjang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Checkout Modal -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-checkout-content">
@@ -523,8 +548,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
                         <div class="grid grid-cols-2 gap-3">
-                            <button class="pay-method border-2 border-secondary bg-blue-50 text-secondary py-2 rounded-lg font-medium transition-all" onclick="selectMethod('Tunai', this)"><i class="ph ph-money mr-1"></i> Tunai</button>
-                            <button class="pay-method border border-gray-200 text-gray-600 hover:bg-gray-50 py-2 rounded-lg font-medium transition-all" onclick="selectMethod('QRIS / Transfer', this)"><i class="ph ph-qr-code mr-1"></i> QRIS/Transfer</button>
+                            <button type="button" class="pay-method border-2 border-secondary bg-blue-50 text-secondary py-2 rounded-lg font-medium transition-all" onclick="selectMethod('Tunai', this)"><i class="ph ph-money mr-1"></i> Tunai</button>
+                            <button type="button" class="pay-method border border-gray-200 text-gray-600 hover:bg-gray-50 py-2 rounded-lg font-medium transition-all" onclick="selectMethod('QRIS / Transfer', this)"><i class="ph ph-qr-code mr-1"></i> QRIS/Transfer</button>
                         </div>
                         <input type="hidden" id="checkout-method" value="Tunai">
                     </div>
@@ -535,9 +560,9 @@
                             <input type="number" id="checkout-dibayar" class="w-full pl-10 border border-gray-300 rounded-lg p-2 text-lg font-semibold focus:ring-secondary focus:border-secondary" oninput="calculateKembalian()">
                         </div>
                         <div class="mt-2 flex gap-2">
-                            <button onclick="setUangPas()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">Uang Pas</button>
-                            <button onclick="addDibayar(50000)" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">+50k</button>
-                            <button onclick="addDibayar(100000)" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">+100k</button>
+                            <button type="button" onclick="setUangPas()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">Uang Pas</button>
+                            <button type="button" onclick="addDibayar(50000)" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">+50k</button>
+                            <button type="button" onclick="addDibayar(100000)" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-3 rounded-full transition-colors">+100k</button>
                         </div>
                     </div>
                     <div class="p-4 rounded-lg bg-gray-50 border border-gray-200" id="checkout-status-box">
@@ -546,8 +571,8 @@
                     </div>
                 </div>
                 <div class="mt-6 flex gap-3">
-                    <button onclick="closeCheckoutModal()" class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 rounded-lg transition-colors">Batal</button>
-                    <button onclick="prosesTransaksi()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition-colors shadow-sm flex justify-center items-center"><i class="ph ph-check-circle mr-2 text-xl"></i> Simpan Transaksi</button>
+                    <button type="button" onclick="closeCheckoutModal()" class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 rounded-lg transition-colors">Batal</button>
+                    <button type="button" onclick="prosesTransaksi()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition-colors shadow-sm flex justify-center items-center"><i class="ph ph-check-circle mr-2 text-xl"></i> Simpan Transaksi</button>
                 </div>
             </div>
         </div>
@@ -584,8 +609,8 @@
             <input type="hidden" id="void-target-id">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Password Owner</label><input type="password" id="void-owner-pass" placeholder="Masukkan password owner" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-red-500 focus:border-red-500 text-sm"></div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeVoidModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium">Batal</button>
-                <button onclick="executeVoid()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-medium">Konfirmasi VOID</button>
+                <button type="button" onclick="closeVoidModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium">Batal</button>
+                <button type="button" onclick="executeVoid()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-medium">Konfirmasi VOID</button>
             </div>
         </div>
     </div>
@@ -620,16 +645,16 @@
     <div id="modal-nota" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-nota-content">
             <div class="bg-gray-50 p-6 text-center border-b border-dashed border-gray-300 flex-shrink-0" id="nota-preview-container">
-                <div id="nota-header-box" class="flex flex-col items-center justify-center" style="margin-bottom: 5px;"></div>
+                <div id="nota-header-box" class="flex flex-col items-center justify-center" style="margin-bottom: 3px;"></div>
                 <h2 class="text-xl font-bold tracking-wider" id="nota-header-name">ARTEFAK.</h2>
                 <p class="text-xs text-gray-500" id="nota-header-address">Jl. Printing Sukses No.1</p>
                 <p class="text-xs text-gray-500" id="nota-header-phone">Telp: 0812-XXXX-XXXX</p>
             </div>
             <div class="p-6 text-sm overflow-y-auto flex-1 space-y-3" id="nota-body"></div>
             <div class="p-4 bg-white flex gap-2 border-t flex-shrink-0">
-                <button onclick="closeNotaModal()" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg text-gray-700 text-xs">Tutup</button>
-                <button onclick="salinNotaWA()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs flex items-center justify-center"><i class="ph ph-whatsapp-logo mr-1"></i> Salin WA</button>
-                <button onclick="printNota()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs flex items-center justify-center"><i class="ph ph-printer mr-1"></i> Cetak</button>
+                <button type="button" onclick="closeNotaModal()" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg text-gray-700 text-xs">Tutup</button>
+                <button type="button" onclick="salinNotaWA()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs flex items-center justify-center"><i class="ph ph-whatsapp-logo mr-1"></i> Salin WA</button>
+                <button type="button" onclick="printNota()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs flex items-center justify-center"><i class="ph ph-printer mr-1"></i> Cetak</button>
             </div>
         </div>
     </div>
@@ -1049,7 +1074,7 @@
             const categories = ['Semua', ...new Set(products.map(p => p.kategori))];
             const container = document.getElementById('category-filters');
             container.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${currentCategory === cat ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">${cat}</button>
+                <button type="button" onclick="filterCategory('${cat}')" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${currentCategory === cat ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">${cat}</button>
             `).join('');
         }
 
@@ -1230,14 +1255,14 @@
                 <div class="bg-gray-50 border rounded-lg p-3 mb-3 text-sm space-y-2">
                     <div class="flex justify-between font-medium text-gray-800">
                         <span>${item.product.nama}</span>
-                        <button onclick="removeFromCart(${idx})" class="text-red-400 hover:text-red-600"><i class="ph ph-trash"></i></button>
+                        <button type="button" onclick="removeFromCart(${idx})" class="text-red-400 hover:text-red-600"><i class="ph ph-trash"></i></button>
                     </div>
                     ${item.keterangan ? `<p class="text-xs text-gray-500">${item.keterangan}</p>` : ''}
                     <div class="flex justify-between items-center pt-1">
                         <div class="flex items-center space-x-2">
-                            <button onclick="updateCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded flex items-center justify-center font-bold hover:bg-gray-100">-</button>
+                            <button type="button" onclick="updateCartQty(${idx}, -1)" class="w-6 h-6 bg-white border rounded flex items-center justify-center font-bold hover:bg-gray-100">-</button>
                             <span class="text-xs font-semibold">${item.qty}</span>
-                            <button onclick="updateCartQty(${idx}, 1)" class="w-6 h-6 bg-white border rounded flex items-center justify-center font-bold hover:bg-gray-100">+</button>
+                            <button type="button" onclick="updateCartQty(${idx}, 1)" class="w-6 h-6 bg-white border rounded flex items-center justify-center font-bold hover:bg-gray-100">+</button>
                         </div>
                         <span class="font-bold text-primary">${formatRp(item.subtotal)}</span>
                     </div>
@@ -1343,7 +1368,7 @@
             const headerBox = document.getElementById('nota-header-box');
             if(storeSettings.logoUrl) {
                 const px = getLogoPixelSize(storeSettings.logoSize || 'medium');
-                headerBox.innerHTML = `<img src="${storeSettings.logoUrl}" alt="Logo Toko" style="max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; margin-bottom: 0px;" onerror="this.style.display='none'">`;
+                headerBox.innerHTML = `<img src="${storeSettings.logoUrl}" alt="Logo Toko" style="max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; margin-bottom: 3px;" onerror="this.style.display='none'">`;
             } else {
                 headerBox.innerHTML = '';
             }
@@ -1420,11 +1445,11 @@
                 .flex { display: flex; }
                 .justify-between { justify-content: space-between; }
                 .border-dashed { border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px; }
-                img { display: block; margin: 0 auto 0 auto; max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; }
+                img { display: block; margin: 0 auto 3px auto; max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; }
             </style></head><body>`);
 
             if(storeSettings.logoUrl) {
-                WinPrint.document.write(`<div class="text-center" style="margin-bottom: 5px;"><img src="${storeSettings.logoUrl}" alt="Logo"></div>`);
+                WinPrint.document.write(`<div class="text-center"><img src="${storeSettings.logoUrl}" alt="Logo"></div>`);
             }
             WinPrint.document.write(`<div class="text-center border-dashed"><strong>${storeSettings.nama}</strong><br>${storeSettings.alamat}<br>${storeSettings.telp ? 'Telp: '+storeSettings.telp : ''}</div>`);
             WinPrint.document.write(`<div class="border-dashed">No: ${t.id}<br>Waktu Trx: ${formatTanggalLengkap(t.tanggal)}<br>Cetak: ${printTimeStr}<br>Pelanggan: ${t.pelanggan}<br>Kasir: ${t.kasir || '-'}</div>`);
@@ -1477,7 +1502,7 @@
                     <td class="p-3"><span class="px-2 py-1 rounded text-xs ${p.tipe === 'Banner' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${p.tipe}</span></td>
                     <td class="p-3 text-gray-600">${formatRp(p.harga)}${p.tipe==='Banner'?'/m²':''}</td>
                     <td class="p-3 font-semibold ${p.stok <= 5 && p.tipe !== 'Banner' ? 'text-red-500' : 'text-gray-800'}">${p.tipe === 'Banner' ? '~' : p.stok}</td>
-                    <td class="p-3"><button onclick="editProduct('${p.id}')" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded"><i class="ph ph-pencil-simple"></i></button></td>
+                    <td class="p-3"><button type="button" onclick="editProduct('${p.id}')" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded"><i class="ph ph-pencil-simple"></i></button></td>
                 </tr>`).join('');
         }
 
@@ -1567,8 +1592,8 @@
                     <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${isVoid ? 'bg-red-100 text-red-600' : (trx.status === 'LUNAS' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700')}">${trx.status}</span></td>
                     <td class="p-3">
                         <div class="flex gap-1 items-center">
-                            <button onclick='tampilkanNota(${JSON.stringify(trx)})' class="text-secondary bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs font-medium">Detail</button>
-                            ${!isVoid ? `<button onclick="triggerVoid('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded text-xs font-bold uppercase">VOID</button>` : ''}
+                            <button type="button" onclick='tampilkanNota(${JSON.stringify(trx)})' class="text-secondary bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs font-medium">Detail</button>
+                            ${!isVoid ? `<button type="button" onclick="triggerVoid('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded text-xs font-bold uppercase">VOID</button>` : ''}
                         </div>
                     </td>
                 </tr>`;
@@ -1606,8 +1631,8 @@
                         <span class="ml-2 text-xs uppercase px-2 py-0.5 rounded font-bold ${s.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${s.role}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openEditStaffModal(${idx})" class="text-secondary bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded text-xs font-medium flex items-center"><i class="ph ph-pencil-simple mr-1"></i> Edit</button>
-                        ${s.username !== 'owner' ? `<button onclick="deleteStaff(${idx})" class="text-red-500 hover:text-red-700 text-xs font-medium px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 flex items-center"><i class="ph ph-trash mr-1"></i> Hapus</button>` : '<span class="text-xs text-gray-400 px-2">Utama</span>'}
+                        <button type="button" onclick="openEditStaffModal(${idx})" class="text-secondary bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded text-xs font-medium flex items-center"><i class="ph ph-pencil-simple mr-1"></i> Edit</button>
+                        ${s.username !== 'owner' ? `<button type="button" onclick="deleteStaff(${idx})" class="text-red-500 hover:text-red-700 text-xs font-medium px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 flex items-center"><i class="ph ph-trash mr-1"></i> Hapus</button>` : '<span class="text-xs text-gray-400 px-2">Utama</span>'}
                     </div>
                 </div>
             `).join('');
