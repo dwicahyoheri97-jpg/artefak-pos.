@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTEFAK - Printing POS & Live Sync System</title>
+    <title>ARTEFAK - Printing POS & Cloud Sync System</title>
     <link rel="icon" type="image/png" href="logo-toko-nota.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
             <div class="p-8 text-center bg-primary text-white">
                 <h1 class="text-3xl font-bold tracking-wider mb-2">ARTEFAK.</h1>
-                <p class="text-blue-200 text-sm">Sistem Kasir & Live Spreadsheet Sync</p>
+                <p class="text-blue-200 text-sm">Sistem Kasir & Cloud Sync</p>
             </div>
             <div class="p-8">
                 <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
@@ -133,7 +133,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.65</span>
+            <span>v2.70 (Cloud Hybrid)</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -145,6 +145,9 @@
                 <h2 id="page-title" class="text-xl font-semibold text-gray-800">Kasir</h2>
             </div>
             <div class="flex items-center space-x-3">
+                <button onclick="manualSyncFromCloud()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs px-3 py-1.5 rounded-lg font-medium flex items-center transition-colors" title="Sinkronisasi Data dari Cloud">
+                    <i class="ph ph-cloud-arrow-down mr-1 text-sm"></i> Sync Cloud
+                </button>
                 <div class="text-sm text-right hidden sm:block">
                     <p class="font-medium" id="header-username">Halo, User</p>
                     <p class="text-gray-500 text-xs" id="current-date">-</p>
@@ -1999,6 +2002,33 @@
             } catch(e) { showToast("Gagal terhubung, pastikan URL Apps Script benar.", true); }
         }
 
+        async function manualSyncFromCloud() {
+            const url = storeSettings.sheetUrl;
+            if(!url) { showToast("URL Spreadsheet belum diatur di menu Pengaturan!", true); return; }
+            showToast("Menarik data terbaru dari Cloud...");
+            try {
+                const res = await fetch(`${url}?action=get_data`, { method: 'GET' });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    if(data.products && data.products.length > 0) {
+                        products = data.products;
+                    }
+                    if(data.transactions && data.transactions.length > 0) {
+                        transactions = data.transactions;
+                    }
+                    saveDataLocally();
+                    renderProducts();
+                    renderDashboard();
+                    showToast("Berhasil menyinkronkan data dari Cloud!");
+                } else {
+                    showToast("Gagal memuat data dari cloud.", true);
+                }
+            } catch(err) {
+                console.error("Cloud sync error:", err);
+                showToast("Gagal menyambung ke Cloud. Periksa koneksi internet.", true);
+            }
+        }
+
         function saveDataLocally() {
             localStorage.setItem('artefak_products', JSON.stringify(products));
             localStorage.setItem('artefak_transactions', JSON.stringify(transactions));
@@ -2007,11 +2037,26 @@
             localStorage.setItem('artefak_drafts', JSON.stringify(draftOrders));
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             updateDraftBadge();
             const savedSession = sessionStorage.getItem('artefak_session');
             if(savedSession) { currentUser = JSON.parse(savedSession); initSessionUI(); }
             else { document.getElementById('login-screen').classList.remove('hidden'); }
+
+            // Automatic background cloud sync on startup if URL is configured
+            if(storeSettings.sheetUrl) {
+                try {
+                    const res = await fetch(`${storeSettings.sheetUrl}?action=get_data`, { method: 'GET' });
+                    const data = await res.json();
+                    if(data.status === 'success') {
+                        if(data.products && data.products.length > 0) products = data.products;
+                        if(data.transactions && data.transactions.length > 0) transactions = data.transactions;
+                        saveDataLocally();
+                    }
+                } catch(e) {
+                    console.log("Offline mode or sync skipped.");
+                }
+            }
         };
     </script>
 </body>
