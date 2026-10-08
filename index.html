@@ -109,7 +109,7 @@
                 </li>
             </ul>
             
-            <div class="mt-6 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Laporan & Sistem</div>
+            <div class="mt-6 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Laporan</div>
             <ul class="space-y-1">
                 <li class="nav-item-owner">
                     <button onclick="navigate('laporan')" id="nav-laporan" class="w-full flex items-center px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
@@ -121,6 +121,10 @@
                         <i class="ph ph-clock-counter-clockwise text-xl mr-3"></i> Riwayat Transaksi
                     </button>
                 </li>
+            </ul>
+
+            <div class="mt-6 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sistem</div>
+            <ul class="space-y-1">
                 <li class="nav-item-owner">
                     <button onclick="navigate('pengaturan')" id="nav-pengaturan" class="w-full flex items-center px-6 py-3 text-left text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
                         <i class="ph ph-gear text-xl mr-3"></i> Pengaturan Toko
@@ -129,7 +133,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.39 (Fixed Checkout)</span>
+            <span>v2.42</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -238,7 +242,10 @@
             <!-- Stok View -->
             <div id="view-stok" class="bg-white rounded-xl shadow-sm border border-gray-200 hidden hidden-view">
                 <div class="p-4 border-b flex justify-between items-center flex-wrap gap-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">Manajemen Produk & Stok</h3>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 text-lg">Manajemen Produk & Stok</h3>
+                        <p class="text-xs text-gray-500">Kelola katalog produk dan harga jual. Stok otomatis bertambah dari menu Pembelian Bahan.</p>
+                    </div>
                     <button onclick="openProductModal()" class="bg-primary hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center transition-colors">
                         <i class="ph ph-plus mr-2"></i> Tambah Produk
                     </button>
@@ -295,8 +302,8 @@
             <div id="view-pembelian" class="bg-white rounded-xl shadow-sm border border-gray-200 hidden hidden-view p-6 max-w-5xl mx-auto space-y-6">
                 <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-4">
                     <div>
-                        <h3 class="font-bold text-xl text-gray-800 flex items-center"><i class="ph ph-basket mr-2 text-secondary"></i> Pembelian Bahan Baku & Stok Masuk</h3>
-                        <p class="text-sm text-gray-500">Catat pembelian rol banner, tinta, kertas, dan bahan cetak lainnya.</p>
+                        <h3 class="font-bold text-xl text-gray-800 flex items-center"><i class="ph ph-basket mr-2 text-secondary"></i> Pembelian Bahan Baku & Restok Otomatis</h3>
+                        <p class="text-sm text-gray-500">Catat pembelian dari supplier. Pilih produk dari daftar saran untuk langsung menambah stok.</p>
                     </div>
                     <div class="flex items-center gap-3 flex-wrap">
                         <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-lg border"><span class="text-xs font-medium text-gray-600 px-1">Dari:</span><input type="date" id="filter-beli-mulai" onchange="renderPembelianTable()" class="border border-gray-300 rounded p-1 text-xs bg-white font-medium outline-none"></div>
@@ -312,7 +319,7 @@
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
-                        <thead><tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3 font-medium">Waktu & Tanggal Pembelian</th><th class="p-3 font-medium">Nama Bahan / Supplier</th><th class="p-3 font-medium">Jumlah / Qty</th><th class="p-3 font-medium">Total Biaya</th><th class="p-3 font-medium">Keterangan</th></tr></thead>
+                        <thead><tr class="bg-gray-50 text-gray-600 border-b"><th class="p-3 font-medium">Tanggal</th><th class="p-3 font-medium">Supplier / Toko</th><th class="p-3 font-medium">Bahan / Produk</th><th class="p-3 font-medium">Qty Masuk</th><th class="p-3 font-medium">Total Biaya</th><th class="p-3 font-medium">Keterangan</th></tr></thead>
                         <tbody id="pembelian-table-body"></tbody>
                     </table>
                 </div>
@@ -578,21 +585,40 @@
         </div>
     </div>
 
-    <!-- Pembelian Bahan Modal -->
+    <!-- Pembelian Bahan Modal dengan Supplier & Autocomplete -->
     <div id="modal-pembelian" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-lg text-gray-800">Catat Pembelian Bahan</h3>
+                <h3 class="font-bold text-lg text-gray-800">Catat Pembelian Bahan & Restok</h3>
                 <button onclick="closePembelianModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
             </div>
             <form onsubmit="savePembelian(event)" class="space-y-4">
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Bahan / Supplier</label><input type="text" id="beli-nama" required placeholder="Contoh: Rol Banner 320gr / Toko Tinta" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Jumlah / Qty</label><input type="text" id="beli-qty" required placeholder="Contoh: 2 Rol / 5 Botol" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya (Rp)</label><input type="number" id="beli-biaya" required min="0" placeholder="Contoh: 450000" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary font-semibold"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Keterangan (Opsional)</label><input type="text" id="beli-ket" placeholder="Catatan tambahan" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary"></div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Supplier / Toko</label>
+                    <input type="text" id="beli-supplier" required placeholder="Contoh: Toko Kertas Jaya" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary">
+                </div>
+                <div class="relative">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Produk / Bahan</label>
+                    <input type="text" id="beli-nama" required oninput="filterProductSuggestions()" placeholder="Ketik nama produk..." class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary">
+                    <div id="product-suggestions" class="absolute left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-36 overflow-y-auto hidden shadow-lg divide-y divide-gray-100 z-20"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Qty Masuk</label>
+                        <input type="number" id="beli-qty" required min="1" value="1" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya (Rp)</label>
+                        <input type="number" id="beli-biaya" required min="0" placeholder="Contoh: 450000" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary font-semibold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan / Catatan</label>
+                    <input type="text" id="beli-ket" placeholder="Misal: Restok bulanan" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-secondary focus:border-secondary">
+                </div>
                 <div class="pt-2 flex gap-3">
-                    <button type="button" onclick="closePembelianModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg transition-colors">Tutup / Batal</button>
-                    <button type="submit" class="flex-1 bg-secondary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Simpan Pembelian</button>
+                    <button type="button" onclick="closePembelianModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg transition-colors">Batal</button>
+                    <button type="submit" class="flex-1 bg-secondary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Simpan & Tambah Stok</button>
                 </div>
             </form>
         </div>
@@ -615,7 +641,7 @@
         </div>
     </div>
 
-    <!-- Product Modal -->
+    <!-- Product Modal (Tanpa Edit Stok Awal) -->
     <div id="modal-product" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-product-content">
             <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -629,10 +655,7 @@
                     <div class="flex-1"><label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label><input type="text" id="prod-kategori" list="cat-list" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"><datalist id="cat-list"><option value="Print & Cetak"><option value="Banner MMT"><option value="ATK"><option value="Merchandise"></datalist></div>
                     <div class="flex-1"><label class="block text-sm font-medium text-gray-700 mb-1">Tipe</label><select id="prod-tipe" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary bg-white"><option value="Standar">Standar (Pcs)</option><option value="Banner">Banner (Area m²)</option></select></div>
                 </div>
-                <div class="flex gap-4">
-                    <div class="flex-1"><label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label><input type="number" id="prod-harga" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
-                    <div class="flex-1"><label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label><input type="number" id="prod-stok" required value="0" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
-                </div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual (Rp)</label><input type="number" id="prod-harga" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-secondary focus:border-secondary"></div>
                 <div class="pt-4 border-t mt-4 flex gap-3">
                     <button type="button" onclick="closeProductModal()" class="flex-1 bg-white border border-gray-300 text-gray-700 py-2 rounded-lg">Batal</button>
                     <button type="submit" class="flex-1 bg-primary text-white py-2 rounded-lg">Simpan</button>
@@ -645,7 +668,7 @@
     <div id="modal-nota" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-nota-content">
             <div class="bg-gray-50 p-6 text-center border-b border-dashed border-gray-300 flex-shrink-0" id="nota-preview-container">
-                <div id="nota-header-box" class="flex flex-col items-center justify-center" style="margin-bottom: 3px;"></div>
+                <div id="nota-header-box" class="flex flex-col items-center justify-center" style="margin-bottom: 5mm;"></div>
                 <h2 class="text-xl font-bold tracking-wider" id="nota-header-name">ARTEFAK.</h2>
                 <p class="text-xs text-gray-500" id="nota-header-address">Jl. Printing Sukses No.1</p>
                 <p class="text-xs text-gray-500" id="nota-header-phone">Telp: 0812-XXXX-XXXX</p>
@@ -899,30 +922,88 @@
         }
 
         function openPembelianModal() {
+            document.getElementById('beli-supplier').value = "";
             document.getElementById('beli-nama').value = "";
-            document.getElementById('beli-qty').value = "";
+            document.getElementById('beli-qty').value = "1";
             document.getElementById('beli-biaya').value = "";
             document.getElementById('beli-ket').value = "";
             document.getElementById('modal-pembelian').classList.remove('hidden');
         }
 
-        function closePembelianModal() { document.getElementById('modal-pembelian').classList.add('hidden'); }
+        function closePembelianModal() {
+            document.getElementById('modal-pembelian').classList.add('hidden');
+            document.getElementById('product-suggestions').classList.add('hidden');
+        }
+
+        function filterProductSuggestions() {
+            const query = document.getElementById('beli-nama').value.toLowerCase();
+            const box = document.getElementById('product-suggestions');
+            if (!query) {
+                box.classList.add('hidden');
+                return;
+            }
+            const filtered = products.filter(p => p.nama.toLowerCase().includes(query));
+            if (filtered.length === 0) {
+                box.innerHTML = `<div class="p-2.5 text-xs text-gray-400">Produk baru (akan menambah produk baru jika disimpan)</div>`;
+            } else {
+                box.innerHTML = filtered.map(p => `
+                    <div onclick="selectProductSuggestion('${p.nama}')" class="p-2.5 hover:bg-blue-50 text-xs text-gray-800 cursor-pointer font-medium flex justify-between">
+                        <span>${p.nama}</span> <span class="text-gray-400">Stok: ${p.stok}</span>
+                    </div>
+                `).join('');
+            }
+            box.classList.remove('hidden');
+        }
+
+        function selectProductSuggestion(nama) {
+            document.getElementById('beli-nama').value = nama;
+            document.getElementById('product-suggestions').classList.add('hidden');
+        }
 
         async function savePembelian(e) {
             e.preventDefault();
+            const supplier = document.getElementById('beli-supplier').value.trim();
+            const nama = document.getElementById('beli-nama').value.trim();
+            const qty = parseInt(document.getElementById('beli-qty').value) || 0;
+            const biaya = parseInt(document.getElementById('beli-biaya').value) || 0;
+            const keterangan = document.getElementById('beli-ket').value.trim() || '-';
+
+            if(!supplier || !nama || qty <= 0) {
+                showToast("Lengkapi data pembelian dengan benar!", true);
+                return;
+            }
+
             const record = {
                 id: 'BL-' + Date.now(),
                 tanggal: new Date().toISOString(),
-                nama: document.getElementById('beli-nama').value,
-                qty: document.getElementById('beli-qty').value,
-                biaya: parseInt(document.getElementById('beli-biaya').value) || 0,
-                keterangan: document.getElementById('beli-ket').value || '-'
+                supplier: supplier,
+                nama: nama,
+                qty: qty,
+                biaya: biaya,
+                keterangan: keterangan
             };
+
+            const matchProd = products.find(p => p.nama.toLowerCase() === nama.toLowerCase());
+            if (matchProd && matchProd.tipe !== 'Banner') {
+                matchProd.stok += qty;
+            } else if (!matchProd) {
+                products.push({
+                    id: 'P' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+                    nama: nama,
+                    kategori: 'Bahan Baku',
+                    tipe: 'Standar',
+                    harga: Math.round((biaya / qty) * 1.4),
+                    hpp: Math.round(biaya / qty),
+                    stok: qty
+                });
+            }
+
             pembelianBahan.unshift(record);
-            localStorage.setItem('artefak_pembelian', JSON.stringify(pembelianBahan));
+            saveDataLocally();
             closePembelianModal();
             renderPembelianTable();
-            showToast("Pembelian bahan berhasil dicatat!");
+            renderStockTable();
+            showToast("Pembelian berhasil & stok otomatis bertambah!");
             if(storeSettings.sheetUrl) await syncSinglePembelianToSheet(record);
         }
 
@@ -941,15 +1022,16 @@
             });
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-gray-400">Belum ada catatan pembelian bahan pada rentang tanggal ini</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-gray-400">Belum ada catatan pembelian bahan pada rentang tanggal ini</td></tr>`;
             } else {
                 tbody.innerHTML = filtered.map(item => {
                     totalPeriode += item.biaya;
                     return `
                     <tr class="border-b hover:bg-gray-50">
                         <td class="p-3 text-gray-600 font-medium">${formatTanggalLengkap(item.tanggal)}</td>
-                        <td class="p-3 text-gray-800">${item.nama}</td>
-                        <td class="p-3 text-gray-600">${item.qty}</td>
+                        <td class="p-3 text-gray-800 font-semibold">${item.supplier || '-'}</td>
+                        <td class="p-3 text-secondary font-medium">${item.nama}</td>
+                        <td class="p-3 font-bold text-emerald-600">+${item.qty}</td>
                         <td class="p-3 font-semibold text-primary">${formatRp(item.biaya)}</td>
                         <td class="p-3 text-gray-500">${item.keterangan}</td>
                     </tr>`;
@@ -1368,7 +1450,7 @@
             const headerBox = document.getElementById('nota-header-box');
             if(storeSettings.logoUrl) {
                 const px = getLogoPixelSize(storeSettings.logoSize || 'medium');
-                headerBox.innerHTML = `<img src="${storeSettings.logoUrl}" alt="Logo Toko" style="max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; margin-bottom: 3px;" onerror="this.style.display='none'">`;
+                headerBox.innerHTML = `<img src="${storeSettings.logoUrl}" alt="Logo Toko" style="max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; margin-bottom: 5mm;" onerror="this.style.display='none'">`;
             } else {
                 headerBox.innerHTML = '';
             }
@@ -1445,7 +1527,7 @@
                 .flex { display: flex; }
                 .justify-between { justify-content: space-between; }
                 .border-dashed { border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px; }
-                img { display: block; margin: 0 auto 3px auto; max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; }
+                img { display: block; margin: 0 auto 5mm auto; max-height: ${px.maxH}px; max-width: ${px.maxW}px; object-fit: contain; }
             </style></head><body>`);
 
             if(storeSettings.logoUrl) {
@@ -1502,25 +1584,29 @@
                     <td class="p-3"><span class="px-2 py-1 rounded text-xs ${p.tipe === 'Banner' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${p.tipe}</span></td>
                     <td class="p-3 text-gray-600">${formatRp(p.harga)}${p.tipe==='Banner'?'/m²':''}</td>
                     <td class="p-3 font-semibold ${p.stok <= 5 && p.tipe !== 'Banner' ? 'text-red-500' : 'text-gray-800'}">${p.tipe === 'Banner' ? '~' : p.stok}</td>
-                    <td class="p-3"><button type="button" onclick="editProduct('${p.id}')" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded"><i class="ph ph-pencil-simple"></i></button></td>
+                    <td class="p-3">
+                        <button type="button" onclick="editProduct('${p.id}')" class="bg-blue-50 hover:bg-blue-100 text-secondary px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">Edit</button>
+                    </td>
                 </tr>`).join('');
         }
 
         function openProductModal(id = null) {
             const title = document.getElementById('product-modal-title');
             if(id) {
-                title.textContent = "Edit Produk";
+                title.textContent = "Edit Produk & Harga";
                 const p = products.find(x => x.id === id);
-                document.getElementById('prod-id').value = p.id; document.getElementById('prod-nama').value = p.nama;
-                document.getElementById('prod-kategori').value = p.kategori; document.getElementById('prod-tipe').value = p.tipe;
-                document.getElementById('prod-harga').value = p.harga; document.getElementById('prod-stok').value = p.stok;
-                document.getElementById('prod-stok').disabled = true;
+                document.getElementById('prod-id').value = p.id; 
+                document.getElementById('prod-nama').value = p.nama;
+                document.getElementById('prod-kategori').value = p.kategori; 
+                document.getElementById('prod-tipe').value = p.tipe;
+                document.getElementById('prod-harga').value = p.harga;
             } else {
                 title.textContent = "Tambah Produk Baru";
-                document.getElementById('prod-id').value = ""; document.getElementById('prod-nama').value = "";
-                document.getElementById('prod-kategori').value = ""; document.getElementById('prod-tipe').value = "Standar";
-                document.getElementById('prod-harga').value = ""; document.getElementById('prod-stok').value = "0";
-                document.getElementById('prod-stok').disabled = false;
+                document.getElementById('prod-id').value = ""; 
+                document.getElementById('prod-nama').value = "";
+                document.getElementById('prod-kategori').value = ""; 
+                document.getElementById('prod-tipe').value = "Standar";
+                document.getElementById('prod-harga').value = "";
             }
             
             const modal = document.getElementById('modal-product');
@@ -1539,16 +1625,22 @@
         function saveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('prod-id').value;
-            const newData = { nama: document.getElementById('prod-nama').value, kategori: document.getElementById('prod-kategori').value, tipe: document.getElementById('prod-tipe').value, harga: parseInt(document.getElementById('prod-harga').value) };
+            const newData = { 
+                nama: document.getElementById('prod-nama').value, 
+                kategori: document.getElementById('prod-kategori').value, 
+                tipe: document.getElementById('prod-tipe').value, 
+                harga: parseInt(document.getElementById('prod-harga').value) || 0 
+            };
             if(id) {
                 const idx = products.findIndex(x => x.id === id);
                 products[idx] = { ...products[idx], ...newData };
-                showToast("Produk diupdate");
+                showToast("Produk berhasil diupdate");
             } else {
                 newData.id = 'P' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                newData.stok = parseInt(document.getElementById('prod-stok').value) || 0;
-                newData.hpp = 0; products.push(newData);
-                showToast("Produk ditambahkan");
+                newData.stok = 0;
+                newData.hpp = 0; 
+                products.push(newData);
+                showToast("Produk baru berhasil ditambahkan");
             }
             saveDataLocally(); renderStockTable(); closeProductModal(); renderCategories();
         }
@@ -1726,7 +1818,7 @@
             try {
                 await fetch(url, {
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'PEMBELIAN', id: b.id, tanggal: formatTanggalLengkap(b.tanggal), nama: b.nama, qty: b.qty, biaya: b.biaya, keterangan: b.keterangan })
+                    body: JSON.stringify({ type: 'PEMBELIAN', id: b.id, tanggal: formatTanggalLengkap(b.tanggal), supplier: b.supplier, nama: b.nama, qty: b.qty, biaya: b.biaya, keterangan: b.keterangan })
                 });
             } catch (err) { console.error("Gagal sinkron:", err); }
         }
