@@ -133,7 +133,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.50</span>
+            <span>v2.65</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -678,7 +678,7 @@
         </div>
     </div>
 
-    <!-- Product Modal (Tanpa Edit Stok Awal) -->
+    <!-- Product Modal -->
     <div id="modal-product" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-product-content">
             <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -1058,7 +1058,10 @@
             renderPembelianTable();
             renderStockTable();
             showToast("Pembelian berhasil & stok otomatis bertambah!");
-            if(storeSettings.sheetUrl) await syncSinglePembelianToSheet(record);
+            if(storeSettings.sheetUrl) {
+                await syncSinglePembelianToSheet(record);
+                await syncAllProductsToSheet();
+            }
         }
 
         function renderPembelianTable() {
@@ -1176,7 +1179,7 @@
             document.getElementById('sim-laba').textContent = formatRp(p.harga - (p.hpp || 0));
         }
 
-        function saveProductHpp() {
+        async function saveProductHpp() {
             const id = document.getElementById('hpp-product-select').value;
             const hppVal = parseInt(document.getElementById('hpp-modal-input').value) || 0;
             if(!id) { showToast("Pilih produk terlebih dahulu!", true); return; }
@@ -1186,6 +1189,7 @@
             loadProductHpp();
             renderHppTable();
             showToast("HPP produk berhasil disimpan!");
+            if(storeSettings.sheetUrl) await syncAllProductsToSheet();
         }
 
         function renderHppTable() {
@@ -1567,7 +1571,10 @@
             saveDataLocally(); closeCheckoutModal(); lastPrintedTrx = newTrx;
             tampilkanNota(newTrx); clearCart(); document.getElementById('input-pelanggan-global').value = "";
             renderProducts(); renderDashboard(); showToast("Transaksi Berhasil!");
-            if(storeSettings.sheetUrl) await syncSingleTransactionToSheet(newTrx);
+            if(storeSettings.sheetUrl) {
+                await syncSingleTransactionToSheet(newTrx);
+                await syncAllProductsToSheet();
+            }
         }
 
         function tampilkanNota(trx) {
@@ -1680,14 +1687,14 @@
 
         function triggerVoid(trxId) { document.getElementById('void-target-id').value = trxId; document.getElementById('void-owner-pass').value = ""; document.getElementById('modal-auth-void').classList.remove('hidden'); }
         function closeVoidModal() { document.getElementById('modal-auth-void').classList.add('hidden'); }
-        function executeVoid() {
+        async function executeVoid() {
             if(document.getElementById('void-owner-pass').value === '123456' || document.getElementById('void-owner-pass').value === '123') {
                 const trxId = document.getElementById('void-target-id').value;
-                closeVoidModal(); processVoid(trxId);
+                closeVoidModal(); await processVoid(trxId);
             } else { showToast("Password Owner salah!", true); }
         }
 
-        function processVoid(trxId) {
+        async function processVoid(trxId) {
             const trx = transactions.find(t => t.id === trxId);
             if(trx && trx.status !== 'VOID') {
                 trx.status = 'VOID';
@@ -1698,6 +1705,10 @@
                     }
                 });
                 saveDataLocally(); renderHistoryTable(); renderDashboard(); showToast(`Transaksi ${trxId} berhasil di-VOID.`);
+                if(storeSettings.sheetUrl) {
+                    await syncSingleTransactionToSheet(trx);
+                    await syncAllProductsToSheet();
+                }
             }
         }
 
@@ -1748,7 +1759,7 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        function saveProduct(e) {
+        async function saveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('prod-id').value;
             const newData = { 
@@ -1769,6 +1780,7 @@
                 showToast("Produk baru berhasil ditambahkan");
             }
             saveDataLocally(); renderStockTable(); closeProductModal(); renderCategories();
+            if(storeSettings.sheetUrl) await syncAllProductsToSheet();
         }
 
         function editProduct(id) { openProductModal(id); }
@@ -1950,7 +1962,7 @@
                         items: trx.items.map(i => `${i.product.nama} (${i.qty}x)`).join(', ')
                     })
                 });
-            } catch (err) { console.error("Gagal sinkron:", err); }
+            } catch (err) { console.error("Gagal sinkron transaksi:", err); }
         }
 
         async function syncSinglePembelianToSheet(b) {
@@ -1960,7 +1972,17 @@
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type: 'PEMBELIAN', id: b.id, tanggal: formatTanggalLengkap(b.tanggal), supplier: b.supplier, nama: b.nama, qty: b.qty, biaya: b.biaya, keterangan: b.keterangan })
                 });
-            } catch (err) { console.error("Gagal sinkron:", err); }
+            } catch (err) { console.error("Gagal sinkron pembelian:", err); }
+        }
+
+        async function syncAllProductsToSheet() {
+            const url = storeSettings.sheetUrl; if(!url) return;
+            try {
+                await fetch(url, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'PRODUCTS_SYNC', products: products })
+                });
+            } catch (err) { console.error("Gagal sinkron produk:", err); }
         }
 
         async function syncDataToGoogleSheet() {
@@ -1973,6 +1995,7 @@
                     body: JSON.stringify({ type: 'TEST', message: 'Koneksi ARTEFAK POS berhasil terhubung!', timestamp: new Date().toISOString() })
                 });
                 showToast("Berhasil mengirim data test ke Spreadsheet!");
+                await syncAllProductsToSheet();
             } catch(e) { showToast("Gagal terhubung, pastikan URL Apps Script benar.", true); }
         }
 
