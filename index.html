@@ -133,7 +133,7 @@
             </ul>
         </nav>
         <div class="p-4 border-t text-sm text-gray-500 text-center flex justify-between items-center">
-            <span>v2.42</span>
+            <span>v2.50</span>
             <span id="role-badge" class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold uppercase">Role</span>
         </div>
     </aside>
@@ -200,9 +200,14 @@
                             <input type="text" id="search-product" placeholder="Cari produk..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/25 outline-none transition-all" onkeyup="filterProducts()">
                         </div>
                         <div class="flex gap-2 w-full md:w-auto overflow-x-auto hide-scroll pb-1 md:pb-0 items-center" id="category-filters"></div>
-                        <button onclick="openCustomProductModal()" class="whitespace-nowrap bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition-colors">
-                            <i class="ph ph-plus-circle mr-1 text-lg"></i> Produk Custom
-                        </button>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="openCustomProductModal()" class="flex-1 md:flex-none whitespace-nowrap bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-lg text-sm font-semibold flex items-center justify-center transition-colors">
+                                <i class="ph ph-plus-circle mr-1 text-base"></i> Custom
+                            </button>
+                            <button onclick="openDraftModal()" class="flex-1 md:flex-none whitespace-nowrap bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-3 py-2 rounded-lg text-sm font-semibold flex items-center justify-center transition-colors relative">
+                                <i class="ph ph-file-text mr-1 text-base"></i> Draft (<span id="draft-count-badge">0</span>)
+                            </button>
+                        </div>
                     </div>
                     <div class="p-4 flex-1 overflow-y-auto">
                         <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4" id="product-grid"></div>
@@ -214,9 +219,11 @@
                         <h3 class="font-semibold text-gray-800 flex items-center"><i class="ph ph-shopping-bag mr-2 text-secondary"></i> Keranjang</h3>
                         <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 font-medium">Kosongkan</button>
                     </div>
-                    <div class="p-4 border-b bg-gray-50/50">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Nama Pelanggan (Untuk Pesanan)</label>
-                        <input type="text" id="input-pelanggan-global" placeholder="Nama / Instansi" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-secondary/20 outline-none">
+                    <div class="p-4 border-b bg-gray-50/50 space-y-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Nama Pelanggan (Untuk Pesanan)</label>
+                            <input type="text" id="input-pelanggan-global" placeholder="Nama / Instansi" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-secondary/20 outline-none">
+                        </div>
                     </div>
                     <div class="flex-1 p-4 overflow-y-auto" id="cart-items">
                         <div class="flex flex-col items-center justify-center h-full text-gray-400">
@@ -227,12 +234,15 @@
                     <div class="p-4 border-t bg-gray-50 space-y-3">
                         <div class="flex justify-between text-gray-600"><span>Subtotal</span><span id="cart-subtotal">Rp 0</span></div>
                         <div class="flex justify-between text-xl font-bold text-gray-800 border-t pt-2"><span>Total</span><span id="cart-total">Rp 0</span></div>
-                        <div class="grid grid-cols-2 gap-2 pt-1">
-                            <button onclick="salinPratinjauOrder()" id="btn-salin-order" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2.5 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                <i class="ph ph-whatsapp-logo mr-1 text-base"></i> Salin Pesanan WA
+                        <div class="grid grid-cols-3 gap-1.5 pt-1">
+                            <button onclick="saveCurrentToDraft()" id="btn-save-draft" class="bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs py-2.5 rounded-lg transition-colors flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled title="Simpan Pesanan Sementara">
+                                <i class="ph ph-floppy-disk text-sm"></i> Simpan Draft
                             </button>
-                            <button onclick="openCheckoutModal()" id="btn-checkout" class="bg-secondary hover:bg-blue-600 text-white font-medium text-xs py-2.5 rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                Bayar Pesanan
+                            <button onclick="salinPratinjauOrder()" id="btn-salin-order" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2.5 rounded-lg transition-colors flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <i class="ph ph-whatsapp-logo text-sm"></i> Salin WA
+                            </button>
+                            <button onclick="openCheckoutModal()" id="btn-checkout" class="bg-secondary hover:bg-blue-600 text-white font-medium text-xs py-2.5 rounded-lg transition-colors shadow-sm flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <i class="ph ph-credit-card text-sm"></i> Bayar
                             </button>
                         </div>
                     </div>
@@ -359,15 +369,28 @@
             <!-- Riwayat Transaksi View -->
             <div id="view-riwayat" class="bg-white rounded-xl shadow-sm border border-gray-200 hidden hidden-view p-6 max-w-6xl mx-auto space-y-4">
                 <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-4">
-                    <h3 class="font-semibold text-gray-800 text-lg">Riwayat Transaksi</h3>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 text-lg">Riwayat Transaksi</h3>
+                        <p class="text-xs text-gray-500">Cari nota berdasarkan nama pelanggan, nomor INV, atau filter status.</p>
+                    </div>
                     <div class="flex items-center gap-3 flex-wrap">
-                        <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-lg border"><span class="text-xs font-medium text-gray-600 px-1">Dari:</span><input type="date" id="filter-riwayat-mulai" onchange="renderHistoryTable()" class="border border-gray-300 rounded p-1 text-xs bg-white font-medium outline-none"></div>
-                        <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-lg border"><span class="text-xs font-medium text-gray-600 px-1">Sampai:</span><input type="date" id="filter-riwayat-selesai" onchange="renderHistoryTable()" class="border border-gray-300 rounded p-1 text-xs bg-white font-medium outline-none"></div>
+                        <div class="relative w-64">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-history" placeholder="Cari No INV / Pelanggan..." onkeyup="renderHistoryTable()" class="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-xs bg-white outline-none focus:ring-2 focus:ring-secondary/20">
+                        </div>
+                        <select id="filter-status-trx" onchange="renderHistoryTable()" class="border border-gray-300 rounded-lg px-3 py-1.5 text-xs bg-white outline-none font-medium text-gray-700">
+                            <option value="ALL">Semua Status</option>
+                            <option value="LUNAS">Lunas</option>
+                            <option value="DP">DP / Belum Lunas</option>
+                            <option value="VOID">Void</option>
+                        </select>
+                        <div class="flex items-center gap-1 bg-gray-50 p-1.5 rounded-lg border"><input type="date" id="filter-riwayat-mulai" onchange="renderHistoryTable()" class="border border-gray-300 rounded p-1 text-xs bg-white font-medium outline-none"></div>
+                        <div class="flex items-center gap-1 bg-gray-50 p-1.5 rounded-lg border"><input type="date" id="filter-riwayat-selesai" onchange="renderHistoryTable()" class="border border-gray-300 rounded p-1 text-xs bg-white font-medium outline-none"></div>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="bg-gray-50 text-gray-600 text-sm border-b"><th class="p-3 font-medium">ID Transaksi</th><th class="p-3 font-medium">Waktu & Tanggal Lengkap</th><th class="p-3 font-medium">Pelanggan</th><th class="p-3 font-medium">Kasir</th><th class="p-3 font-medium">Total</th><th class="p-3 font-medium">Status</th><th class="p-3 font-medium">Aksi</th></tr></thead>
+                        <thead><tr class="bg-gray-50 text-gray-600 text-sm border-b"><th class="p-3 font-medium">No Invoice</th><th class="p-3 font-medium">Waktu & Tanggal</th><th class="p-3 font-medium">Pelanggan</th><th class="p-3 font-medium">Kasir</th><th class="p-3 font-medium">Total</th><th class="p-3 font-medium">Status</th><th class="p-3 font-medium">Aksi</th></tr></thead>
                         <tbody id="history-table-body" class="text-sm"></tbody>
                     </table>
                 </div>
@@ -536,6 +559,20 @@
                     <button type="submit" class="flex-1 bg-secondary hover:bg-blue-600 text-white py-2 rounded-lg text-sm font-medium">Masukkan Keranjang</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Draft List Modal -->
+    <div id="modal-draft-list" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-gray-800 flex items-center"><i class="ph ph-file-text mr-2 text-amber-600"></i> Daftar Pesanan Draft (Sementara)</h3>
+                <button onclick="closeDraftModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-3" id="draft-list-body"></div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end">
+                <button type="button" onclick="closeDraftModal()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -720,6 +757,7 @@
         let transactions = JSON.parse(localStorage.getItem('artefak_transactions')) || [];
         let stockLogs = JSON.parse(localStorage.getItem('artefak_stock_logs')) || [];
         let pembelianBahan = JSON.parse(localStorage.getItem('artefak_pembelian')) || [];
+        let draftOrders = JSON.parse(localStorage.getItem('artefak_drafts')) || [];
         
         let cart = [];
         let totalCart = 0;
@@ -736,6 +774,22 @@
             return d.toLocaleDateString('id-ID', {
                 weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
             });
+        }
+
+        function generateInvoiceId() {
+            const now = new Date();
+            const yy = String(now.getFullYear()).slice(-2);
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const dateStr = `${yy}${mm}${dd}`;
+
+            const todayTrx = transactions.filter(t => {
+                if(!t.tanggal) return false;
+                const d = new Date(t.tanggal);
+                return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+            });
+            const seq = String(todayTrx.length + 1).padStart(3, '0');
+            return `INV-${dateStr}-${seq}`;
         }
 
         function getLogoPixelSize(sizeKey) {
@@ -1319,19 +1373,20 @@
             const container = document.getElementById('cart-items');
             const btnCheckout = document.getElementById('btn-checkout');
             const btnSalinOrder = document.getElementById('btn-salin-order');
+            const btnSaveDraft = document.getElementById('btn-save-draft');
 
             if(cart.length === 0) {
                 container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-400"><i class="ph ph-empty text-4xl mb-2"></i><p class="text-sm">Belum ada produk di keranjang</p></div>`;
                 document.getElementById('cart-subtotal').textContent = formatRp(0);
                 document.getElementById('cart-total').textContent = formatRp(0);
-                btnCheckout.disabled = true; btnSalinOrder.disabled = true;
+                btnCheckout.disabled = true; btnSalinOrder.disabled = true; btnSaveDraft.disabled = true;
                 totalCart = 0; return;
             }
 
             totalCart = cart.reduce((sum, item) => sum + item.subtotal, 0);
             document.getElementById('cart-subtotal').textContent = formatRp(totalCart);
             document.getElementById('cart-total').textContent = formatRp(totalCart);
-            btnCheckout.disabled = false; btnSalinOrder.disabled = false;
+            btnCheckout.disabled = false; btnSalinOrder.disabled = false; btnSaveDraft.disabled = false;
 
             container.innerHTML = cart.map((item, idx) => `
                 <div class="bg-gray-50 border rounded-lg p-3 mb-3 text-sm space-y-2">
@@ -1349,6 +1404,77 @@
                         <span class="font-bold text-primary">${formatRp(item.subtotal)}</span>
                     </div>
                 </div>`).join('');
+        }
+
+        function saveCurrentToDraft() {
+            if(cart.length === 0) return;
+            const pelanggan = document.getElementById('input-pelanggan-global').value.trim() || 'Pelanggan Umum';
+            const draftItem = {
+                id: 'DFT-' + Date.now().toString().slice(-5),
+                tanggal: new Date().toISOString(),
+                pelanggan: pelanggan,
+                items: [...cart],
+                total: totalCart
+            };
+            draftOrders.unshift(draftItem);
+            localStorage.setItem('artefak_drafts', JSON.stringify(draftOrders));
+            updateDraftBadge();
+            clearCart();
+            document.getElementById('input-pelanggan-global').value = "";
+            showToast("Pesanan berhasil disimpan ke Draft!");
+        }
+
+        function updateDraftBadge() {
+            document.getElementById('draft-count-badge').textContent = draftOrders.length;
+        }
+
+        function openDraftModal() {
+            const body = document.getElementById('draft-list-body');
+            if(draftOrders.length === 0) {
+                body.innerHTML = `<div class="text-center py-8 text-gray-400"><i class="ph ph-file-text text-4xl mb-2"></i><p class="text-sm">Tidak ada pesanan dalam draf</p></div>`;
+            } else {
+                body.innerHTML = draftOrders.map((d, idx) => `
+                    <div class="bg-gray-50 border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-gray-800 text-sm">${d.pelanggan}</span>
+                                <span class="text-[11px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">${d.id}</span>
+                            </div>
+                            <p class="text-xs text-gray-500">${formatTanggalLengkap(d.tanggal)} • ${d.items.length} jenis item</p>
+                            <p class="text-xs font-bold text-primary">${formatRp(d.total)}</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="loadDraftToCart(${idx})" class="flex-1 sm:flex-none bg-secondary hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">Muat ke Kasir</button>
+                            <button onclick="deleteDraft(${idx})" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('modal-draft-list').classList.remove('hidden');
+        }
+
+        function closeDraftModal() {
+            document.getElementById('modal-draft-list').classList.add('hidden');
+        }
+
+        function loadDraftToCart(idx) {
+            const d = draftOrders[idx];
+            cart = [...d.items];
+            document.getElementById('input-pelanggan-global').value = d.pelanggan;
+            draftOrders.splice(idx, 1);
+            localStorage.setItem('artefak_drafts', JSON.stringify(draftOrders));
+            updateDraftBadge();
+            renderCart();
+            closeDraftModal();
+            showToast("Draft berhasil dimuat ke keranjang kasir!");
+        }
+
+        function deleteDraft(idx) {
+            draftOrders.splice(idx, 1);
+            localStorage.setItem('artefak_drafts', JSON.stringify(draftOrders));
+            updateDraftBadge();
+            openDraftModal();
+            showToast("Draft dihapus.");
         }
 
         function salinPratinjauOrder() {
@@ -1422,7 +1548,7 @@
             const currentKasirName = currentUser ? currentUser.username : 'owner';
             
             const newTrx = {
-                id: "TRX" + Date.now().toString().slice(-6), tanggal: new Date().toISOString(),
+                id: generateInvoiceId(), tanggal: new Date().toISOString(),
                 pelanggan: pelanggan, total: totalCart, dibayar: dibayar, sisa: isLunas ? 0 : (totalCart - dibayar),
                 status: isLunas ? "LUNAS" : "DP", metode: metode, items: [...cart], kasir: currentKasirName
             };
@@ -1469,7 +1595,7 @@
 
             document.getElementById('nota-body').innerHTML = `
                 <div class="border-b border-dashed border-gray-300 pb-2 text-left text-xs space-y-0.5">
-                    <p>No Nota: ${trx.id}</p>
+                    <p>No Invoice: ${trx.id}</p>
                     <p>Waktu Trx: ${formatTanggalLengkap(trx.tanggal)}</p>
                     <p>Cetak Struk: ${printTimeStr}</p>
                     <p>Pelanggan: ${trx.pelanggan}</p>
@@ -1500,7 +1626,7 @@
             if(!lastPrintedTrx) return;
             const t = lastPrintedTrx;
             const printTimeStr = formatTanggalLengkap(new Date().toISOString());
-            let text = `*NOTA PEMBAYARAN - ${storeSettings.nama}*\nNo Nota: ${t.id}\nWaktu Trx: ${formatTanggalLengkap(t.tanggal)}\nWaktu Cetak: ${printTimeStr}\nPelanggan: ${t.pelanggan}\nKasir: ${t.kasir || '-'}\n------------------------------------\n`;
+            let text = `*NOTA PEMBAYARAN - ${storeSettings.nama}*\nNo Invoice: ${t.id}\nWaktu Trx: ${formatTanggalLengkap(t.tanggal)}\nWaktu Cetak: ${printTimeStr}\nPelanggan: ${t.pelanggan}\nKasir: ${t.kasir || '-'}\n------------------------------------\n`;
             t.items.forEach(i => { text += `• ${i.product.nama} (${i.qty}x) - ${formatRp(i.subtotal)}\n`; if(i.keterangan) text += `  (${i.keterangan})\n`; });
             text += `------------------------------------\nTotal: *${formatRp(t.total)}*\nBayar (${t.metode}): ${formatRp(t.dibayar)}\n`;
             if(t.status === 'DP') text += `Sisa Tagihan: *${formatRp(t.sisa)}*\n`;
@@ -1652,6 +1778,8 @@
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             document.getElementById('filter-riwayat-mulai').value = firstDay.toISOString().split('T')[0];
             document.getElementById('filter-riwayat-selesai').value = today.toISOString().split('T')[0];
+            document.getElementById('search-history').value = "";
+            document.getElementById('filter-status-trx').value = "ALL";
             renderHistoryTable();
         }
 
@@ -1659,17 +1787,29 @@
             const tbody = document.getElementById('history-table-body');
             const startStr = document.getElementById('filter-riwayat-mulai').value;
             const endStr = document.getElementById('filter-riwayat-selesai').value;
+            const searchKeyword = document.getElementById('search-history').value.toLowerCase();
+            const statusFilter = document.getElementById('filter-status-trx').value;
+
             const startDate = startStr ? new Date(startStr + 'T00:00:00') : new Date(0);
             const endDate = endStr ? new Date(endStr + 'T23:59:59') : new Date();
 
             const filtered = transactions.filter(trx => {
                 if(!trx.tanggal) return false;
                 const d = new Date(trx.tanggal);
-                return d >= startDate && d <= endDate;
+                if(d < startDate || d > endDate) return false;
+
+                if(statusFilter !== 'ALL' && trx.status !== statusFilter) return false;
+
+                if(searchKeyword) {
+                    const matchId = trx.id.toLowerCase().includes(searchKeyword);
+                    const matchCust = (trx.pelanggan || '').toLowerCase().includes(searchKeyword);
+                    if(!matchId && !matchCust) return false;
+                }
+                return true;
             });
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-gray-400">Tidak ada transaksi pada rentang tanggal ini</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-gray-400">Tidak ada transaksi ditemukan</td></tr>`;
                 return;
             }
             tbody.innerHTML = filtered.map(trx => {
@@ -1841,9 +1981,11 @@
             localStorage.setItem('artefak_transactions', JSON.stringify(transactions));
             localStorage.setItem('artefak_stock_logs', JSON.stringify(stockLogs));
             localStorage.setItem('artefak_pembelian', JSON.stringify(pembelianBahan));
+            localStorage.setItem('artefak_drafts', JSON.stringify(draftOrders));
         }
 
         window.onload = function() {
+            updateDraftBadge();
             const savedSession = sessionStorage.getItem('artefak_session');
             if(savedSession) { currentUser = JSON.parse(savedSession); initSessionUI(); }
             else { document.getElementById('login-screen').classList.remove('hidden'); }
